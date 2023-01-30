@@ -5,6 +5,7 @@ description = "Extension for centrex-tlf to run OBE simulations in Julia"
 authors = ["ograsdijk <o.grasdijk@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/ograsdijk/CeNTREX-TlF-julia-extension"
 packages = [{include = "centrex_tlf_julia_extension"}]
 
 [tool.poetry.dependencies]
