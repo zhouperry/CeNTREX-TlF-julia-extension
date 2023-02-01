@@ -20,7 +20,7 @@ __all__ = [
     "setup_discrete_callback_terminate",
     "setup_problem",
     "solve_problem",
-    "get_results",
+    "get_results_single",
     "do_simulation_single",
     "setup_problem_parameter_scan",
     "solve_problem_parameter_scan",
@@ -443,10 +443,9 @@ def solve_problem_parameter_scan(
     reltol = config.reltol
     dt = config.dt
     callback = config.callback
-    dtmin = config.dtmin
-    maxiters = config.maxiters
+    # dtmin = config.dtmin
+    # maxiters = config.maxiters
     saveat = config.saveat
-    progress = config.progress
     trajectories = config.trajectories
     save_idxs = config.save_idxs
     distributed_method = config.distributed_method
@@ -481,7 +480,7 @@ def solve_problem_parameter_scan(
         )
 
 
-def get_results() -> OBEResult:
+def get_results_single() -> OBEResult:
     """Retrieve the results of a single trajectory OBE simulation solution.
 
     Returns:
@@ -568,4 +567,4 @@ def do_simulation_single(
     """
     setup_problem(problem.odepars, problem.tspan, problem.ρ, problem.name)
     solve_problem(problem, config)
-    return get_results()
+    return get_results_single()

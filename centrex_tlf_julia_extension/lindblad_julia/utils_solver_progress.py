@@ -15,12 +15,11 @@ def solve_problem_parameter_scan_progress(
     method = config.method
     abstol = config.abstol
     reltol = config.reltol
-    dt = config.dt
+    # dt = config.dt
     callback = config.callback
-    dtmin = config.dtmin
-    maxiters = config.maxiters
+    # dtmin = config.dtmin
+    # maxiters = config.maxiters
     saveat = config.saveat
-    progress = config.progress
     trajectories = config.trajectories
     save_idxs = config.save_idxs
     distributed_method = config.distributed_method

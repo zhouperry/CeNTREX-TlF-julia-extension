@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "centrex-tlf-julia-extension"
-version = "0.1.0"
+version = "0.1.1a0"
 description = "Extension for centrex-tlf to run OBE simulations in Julia"
 authors = ["ograsdijk <o.grasdijk@gmail.com>"]
 license = "MIT"

@@ -61,26 +61,27 @@ using Distributed
     end
 
     """
-        rabi_from_intensity(intensity::Float64, main_coupling::Float64, D::Float64=2.6675506e-30)::Float64
+        rabi_from_intensity(intensity::Float64, coupling::Float64, D::Float64=2.6675506e-30)::Float64
 
-    generate the rabi rate from intensity
+    generate the rabi rate from intensity with the default D for the X to B TlF transition.
     """
 
-    function rabi_from_intensity(intensity::Float64, main_coupling::Float64, D::Float64=2.6675506e-30)::Float64
+    function rabi_from_intensity(intensity::Float64, coupling::Float64, D::Float64=2.6675506e-30)::Float64
         hbar = 1.0545718176461565e-34
         c = 299792458.0
         ϵ0 = 8.8541878128e-12
         E = sqrt(intensity * 2 / (c * ϵ0))
-        Ω = E * main_coupling  * D / hbar
+        Ω = E * coupling  * D / hbar
         return Ω
     end
 
     """
-    multipass_2d_rabi(x::Float64, y::Float64, amplitudes::Vector{Float64}, xlocs::Vector{Float64}, ylocs::Vector{Float64}, σx::Float64, σy::Float64, main_coupling::Float64, D::Float64=2.6675506e-30)::Float64
-        generate a multipass with 2D intensity profiles for each pass and convert to a rabi rate
+    multipass_2d_rabi(x::Float64, y::Float64, intensities::Vector{Float64}, xlocs::Vector{Float64}, ylocs::Vector{Float64}, σx::Float64, σy::Float64, main_coupling::Float64, D::Float64=2.6675506e-30)::Float64
+        generate a multipass with 2D intensity profiles for each pass and convert to a rabi rate for with
+        the default D set for the X to B TlF transition.
     """
-    function multipass_2d_rabi(x::Float64, y::Float64, amplitudes::Vector{Float64}, xlocs::Vector{Float64}, ylocs::Vector{Float64}, σx::Float64, σy::Float64, main_coupling::Float64, D::Float64=2.6675506e-30)::Float64
-        intensity = multipass_2d_intensity(x, y, amplitudes, xlocs, ylocs, σx, σy)
+    function multipass_2d_rabi(x::Float64, y::Float64, intensities::Vector{Float64}, xlocs::Vector{Float64}, ylocs::Vector{Float64}, σx::Float64, σy::Float64, main_coupling::Float64, D::Float64=2.6675506e-30)::Float64
+        intensity = multipass_2d_intensity(x, y, intensities, xlocs, ylocs, σx, σy)
         Ω = rabi_from_intensity(intensity, main_coupling, D)
         return Ω
     end
