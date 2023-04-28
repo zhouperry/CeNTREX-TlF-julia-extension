@@ -12,7 +12,9 @@ from .ode_parameters import odeParameters
 numeric = Union[int, float, complex]
 
 __all__ = [
+    "get_diagonal_indices_flattened",
     "setup_initial_condition_scan",
+    "setup_ratio_calculation_state_idxs",
     "setup_ratio_calculation",
     "setup_state_integral_calculation_state_idxs",
     "setup_state_integral_calculation",
@@ -85,6 +87,17 @@ class OBEResultParameterScan:
     scan_values: List[npt.NDArray[Union[np.int_, np.float_, np.complex_]]]
     results: npt.NDArray[np.complex_]
     zipped: bool
+
+
+def get_diagonal_indices_flattened(size, states=None, mode="python"):
+    if states is None:
+        indices = [i + size * i for i in range(size)]
+    else:
+        indices = [i + size * i for i in states]
+    if mode == "julia":
+        return [i + 1 for i in indices]
+    elif mode == "python":
+        return indices
 
 
 def setup_initial_condition_scan(
@@ -168,6 +181,28 @@ def setup_parameter_scan_ND(
     params = np.array(np.meshgrid(*values, indexing="ij")).T.reshape(-1, len(values))
 
     setup_parameter_scan_zipped(odePar, parameters, params.T)
+
+
+def setup_ratio_calculation_state_idxs(
+    output_func: Optional[str] = None,
+) -> str:
+    if output_func is None:
+        output_func = "output_func"
+
+    cmd = "sum(real([real(sum(sol.u[j])) for j in 1:size(sol)[2]]))"
+
+    Main.eval(
+        f"""
+    @everywhere function {output_func}(sol,i)
+        if size(sol.u)[1] == 1
+            return NaN, false
+        else
+            val = {cmd}
+            return val, false
+        end
+    end"""
+    )
+    return output_func
 
 
 def setup_ratio_calculation(
