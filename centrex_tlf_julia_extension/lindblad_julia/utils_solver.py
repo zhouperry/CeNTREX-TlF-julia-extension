@@ -184,12 +184,15 @@ def setup_parameter_scan_ND(
 
 
 def setup_ratio_calculation_state_idxs(
+    states: Optional[Sequence[int]] = None,
     output_func: Optional[str] = None,
 ) -> str:
     if output_func is None:
         output_func = "output_func"
-
-    cmd = "sum(real([real(sum(sol.u[j])) for j in 1:size(sol)[2]]))"
+    if states is None:
+        cmd = "real(sum(sol.u[end]))/real(sum(sol.u[1]))"
+    else:
+        cmd = f"real(sum(sol.u[end][{states}]))/real(sum(sol.u[1][{states}]))"
 
     Main.eval(
         f"""
