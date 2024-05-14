@@ -11,6 +11,7 @@ __all__ = ["odeParameters", "generate_ode_parameters"]
 
 julia_funcs = [
     "gaussian_2d",
+    "gaussian_2d_rotated",
     "phase_modulation",
     "square_wave",
     "multipass_2d_intensity",
@@ -18,6 +19,7 @@ julia_funcs = [
     "variable_on_off",
     "rabi_from_intensity",
     "multipass_2d_rabi",
+    "resonant_switching",
 ]
 
 type_conv = {
