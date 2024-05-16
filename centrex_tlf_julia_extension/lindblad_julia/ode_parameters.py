@@ -330,7 +330,7 @@ class odeParameters:
             if np.any([fn in julia_funcs for fn in functions_in_expression]):
                 expression = str(expression)
                 # broadcast the function, allows for input of an array of t
-                for fn in julia_funcs:
+                for fn in functions_in_expression:
                     expression = expression.replace(fn, f"{fn}.")
                 for sym in array_symbols:
                     expression = expression.replace(
