@@ -101,7 +101,7 @@ def get_diagonal_indices_flattened(size, states=None, mode="python"):
 
 
 def setup_initial_condition_scan(
-    values: Union[List[Number], npt.NDArray[Union[np.int_, np.float_, np.complex_]]]
+    values: Union[List[Number], npt.NDArray[Union[np.int_, np.float_, np.complex_]]],
 ) -> None:
     Main.params = values
     Main.eval("@everywhere params = $params")
@@ -439,7 +439,7 @@ def solve_problem(
     save_idxs = config.save_idxs
 
     force_dtmin = "false" if dtmin is None else "true"
-    _dtmin = "nothing" if dtmin is None else str(dtmin)
+    _dtmin = "0" if dtmin is None else str(dtmin)
     _saveat = "[]" if saveat is None else str(saveat)
     _save_idxs = "nothing" if save_idxs is None else str(save_idxs)
 
