@@ -51,8 +51,6 @@ class odeParameters:
             kwargs = {par: 0.0 for par in args[0]}
             odeParameters(**kwargs)
 
-        # kwargs = self._check_for_density(kwargs)
-        # kwargs = self._check_for_states(kwargs)
         self._parameters = [
             key for key, val in kwargs.items() if not isinstance(val, str)
         ]
@@ -83,25 +81,6 @@ class odeParameters:
             if type_conv.get(type(getattr(self, par)).__name__) == "Array"
         )
 
-    def _check_for_density(self, kwargs):
-        assert "ρ" in kwargs.keys(), "Supply an initial density ρ to odeParameters"
-        self.ρ = kwargs.get("ρ")
-        del kwargs["ρ"]
-        return kwargs
-
-    def _check_for_states(self, kwargs):
-        assert (
-            "ground" in kwargs.keys()
-        ), "Supply ground states `ground` to odeParameters"
-        self.ground = kwargs.get("ground")
-        del kwargs["ground"]
-        assert (
-            "excited" in kwargs.keys()
-        ), "Supply excited states `excited` to odeParameters"
-        self.excited = kwargs.get("excited")
-        del kwargs["excited"]
-        return kwargs
-
     def __setattr__(self, name: str, value):
         if name in [
             "_parameters",
@@ -110,9 +89,6 @@ class odeParameters:
             "_array_types",
         ]:
             super(odeParameters, self).__setattr__(name, value)
-        elif name == "ρ":
-            super(odeParameters, self).__setattr__(name, value)
-        elif name in ["ground", "excited"]:
             super(odeParameters, self).__setattr__(name, value)
         elif name in self._parameters:
             assert not isinstance(
