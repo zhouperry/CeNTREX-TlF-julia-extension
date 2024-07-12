@@ -6,6 +6,7 @@ import numpy.typing as npt
 import psutil
 import sympy as smp
 from centrex_tlf import couplings, hamiltonian, states
+from centrex_tlf.couplings import CouplingFields
 from centrex_tlf.lindblad import OBESystem, utils_decay
 from julia import Main
 
@@ -32,7 +33,7 @@ class OBESystemJulia:
     preamble: str = ""
     QN_original: Optional[Sequence[states.State]] = None
     decay_channels: Optional[Sequence[utils_decay.DecayChannel]] = None
-    couplings_original: Optional[Sequence[List[Any]]] = None
+    couplings_original: Optional[Sequence[CouplingFields]] = None
 
     def __repr__(self) -> str:
         ground = [s.largest for s in self.ground]
