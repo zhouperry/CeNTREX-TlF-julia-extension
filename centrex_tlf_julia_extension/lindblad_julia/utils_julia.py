@@ -1,12 +1,32 @@
 from pathlib import Path
 from typing import List
 
-from julia import Main
+import juliacall
+
+jl = juliacall.Main  # type: ignore[attr-defined]
 
 __all__ = ["initialize_julia", "generate_ode_fun_julia"]
 
+# jl = juliacall.newmodule("centrex-tlf-julia-extension")
 
-def initialize_julia(nprocs: int, verbose: bool = True):
+julia_dependency_packages = [
+    "TerminalLoggers",
+    "ProgressMeter",
+    "Waveforms",
+    "Trapz",
+    "DifferentialEquations",
+]
+
+
+def install_packages() -> None:
+    jl.seval("using Pkg")
+    for pkg in julia_dependency_packages:
+        if not bool(jl.seval(f'isnothing(Base.find_package("{pkg}")) ? false : true')):
+            print(f"Installing Julia package: {pkg}")
+            jl.Pkg.add(pkg)
+
+
+def initialize_julia(nprocs: int, blas_threads: int = 1, verbose: bool = True) -> None:
     """
     Function to initialize Julia over nprocs processes.
     Creates nprocs processes and loads the necessary Julia
@@ -15,7 +35,8 @@ def initialize_julia(nprocs: int, verbose: bool = True):
     Args:
         nprocs (int): number of Julia processes to initialize.
     """
-    Main.eval(
+    install_packages()
+    jl.seval(
         """
         using Logging: global_logger
         using TerminalLoggers: TerminalLogger
@@ -26,26 +47,29 @@ def initialize_julia(nprocs: int, verbose: bool = True):
     """
     )
 
-    if Main.eval("nprocs()") < nprocs:
-        Main.eval(f"addprocs({nprocs}-nprocs())")
+    if jl.seval("nprocs()") < nprocs:
+        jl.seval(f"addprocs({nprocs}-nprocs())")
 
-    if Main.eval("nprocs()") > nprocs:
-        procs = Main.eval("procs()")
+    if jl.seval("nprocs()") > nprocs:
+        procs = jl.seval("procs()")
         procs = procs[nprocs:]
-        Main.eval(f"rmprocs({procs})")
+        jl.seval(f"rmprocs({procs})")
 
-    Main.eval(
-        """
+    jl.seval(
+        f"""
         @everywhere begin
             using LinearAlgebra
+            using LinearAlgebra.BLAS
             using Trapz
             using DifferentialEquations
+            using Waveforms
+            LinearAlgebra.BLAS.set_num_threads({blas_threads})
         end
     """
     )
     # loading common julia functions from julia_common.jl
     path = Path(__file__).parent / "julia_common.jl"
-    Main.eval(f'include(raw"{path}")')
+    jl.seval(f'include(raw"{path}")')
 
     if verbose:
         print(f"Initialized Julia with {nprocs} processes")
@@ -69,5 +93,5 @@ def generate_ode_fun_julia(preamble: str, code_lines: List[str]) -> str:
     for cline in code_lines:
         ode_fun += "\t\t" + cline + "\n"
     ode_fun += "\t end \n \t nothing \n end"
-    Main.eval(f"@everywhere {ode_fun}")
+    jl.seval(f"@everywhere {ode_fun}")
     return ode_fun
